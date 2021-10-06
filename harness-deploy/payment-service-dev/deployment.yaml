@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
  {{- if .Values.sename}}
- name: {{ .Values.name }}-{{ .Values.sename }}
+ name: {{ .Values.name }}-map
  {{- else }}
  name: {{.Values.name}}
  {{- end }} 
@@ -16,11 +16,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
- {{- if .Values.sename}}
- name: {{ .Values.name }}-{{ .Values.sename }}
- {{- else }}
- name: {{.Values.name}}
- {{- end }} 
+ name: {{ .Values.name }}-secret
 stringData:
 {{.Values.env.secrets | toYaml | indent 2}}
 ---
@@ -30,11 +26,7 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  {{- if .Values.sename }}
-  name: {{ .Values.name }}-{{ .Values.sename }}-dockercfg
-  {{- else }}
-  name: {{ .Values.name }}
-  {{- end }}
+  name: {{ .Values.name }}-dockercfg
   annotations:
     harness.io/skip-versioning: true
 data:
@@ -46,8 +38,7 @@ type: kubernetes.io/dockercfg
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- {{- if .Values.sename}}
- name: {{ .Values.name }}-{{ .Values.sename }}-deployment
+ name: {{ .Values.name }}-deployment
  {{- else }}
  name: {{.Values.name}}-deployment
  {{- end }} 
@@ -55,52 +46,28 @@ spec:
   replicas: {{int .Values.replicas}}
   selector:
     matchLabels:
-     {{- if .Values.sename}}
-      app: {{ .Values.name }}-{{ .Values.sename }}
-     {{- else }}
-      app: {{ .Values.name }}
-     {{- end }} 
+      app: {{ .Values.name }}-dep
   template:
     metadata:
       labels:
-        {{- if .Values.sename}}
-        app: {{ .Values.name }}-{{ .Values.sename }}
-        {{- else }}
-        app: {{ .Values.name }}
-        {{- end }} 
+        app: {{ .Values.name }}-temp
     spec:
       {{- if .Values.dockercfg}}
       imagePullSecrets:
-      {{- if .Values.sename }}
-      - name: {{ .Values.name }}-{{ .Values.sename }}-dockercfg
-      {{- else }}
       - name: {{ .Values.name }}-dockercfg
       {{- end}}
-      {{- end}}
       containers:
-      {{- if .Values.sename }}
-      - name: {{ .Values.name }}-{{ .Values.sename }}
-      {{- else }}
       - name: {{ .Values.name }}
-      {{- end}}
         image: {{ .Values.image }}
         {{- if or .Values.env.config .Values.env.secrets}}
         imagePullPolicy: Always
         envFrom:
         {{- if .Values.env.config}}
         - configMapRef:
-            {{- if .Values.sename }}
-            name: {{ .Values.name }}-{{ .Values.sename }}
-            {{- else}}
             name: {{ .Values.name }}
-            {{- end}}
         {{- end}}
         {{- if .Values.env.secrets}}
         - secretRef:
-            {{- if .Values.sename }}
-            name: {{ .Values.name }}-{{ .Values.sename }}
-            {{- else}}
             name: {{ .Values.name }}
-            {{- end}}
         {{- end}}
         {{- end}}
