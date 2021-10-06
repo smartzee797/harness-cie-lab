@@ -2,11 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
- {{- if .Values.sename}}
- name: {{ .Values.name }}-map
- {{- else }}
  name: {{.Values.name}}
- {{- end }} 
 data:
 {{.Values.env.config | toYaml | indent 2}}
 ---
