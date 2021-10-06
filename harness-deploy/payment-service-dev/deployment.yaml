@@ -35,9 +35,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
  name: {{ .Values.name }}-deployment
- {{- else }}
- name: {{.Values.name}}-deployment
- {{- end }} 
 spec:
   replicas: {{int .Values.replicas}}
   selector:
