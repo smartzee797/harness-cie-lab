@@ -17,8 +17,6 @@ serviceType: ClusterIP
 servicePort: 8080
 serviceTargetPort: 8080
 
-sename: <+pipeline.variables.seusername>
-
 # Specify all environment variables to be added to the container.
 # The following two maps, config and secrets, are put into a ConfigMap
 # and a Secret, respectively.
